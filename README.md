@@ -31,8 +31,9 @@ To start the API, follow these steps:
 
 1. Clone the repository to your local machine.
 2. Navigate to the project directory.
-3. Start the server by running `make start`.
-4. The API should now be running and accessible at `https://mindento-scheduler.localhost/`.
+3. Run `cp .env.sample .env` to create .env file
+4. Start the server by running `make start`.
+5. The API should now be running and accessible at `https://mindento-scheduler.localhost/`.
 
 ## Testing the API
 To test the API, follow these steps:
