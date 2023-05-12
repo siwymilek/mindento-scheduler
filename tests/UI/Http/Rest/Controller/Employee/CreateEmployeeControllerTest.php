@@ -16,7 +16,7 @@ class CreateEmployeeControllerTest extends ApiTestCase
      *
      * @throws \Throwable
      */
-    public function testCreateEmployeeShouldReturn200StatusCode(): void
+    public function testCreateEmployeeShouldReturn201StatusCode(): void
     {
         $this->post('/api/employee', []);
         $this->assertSame(Response::HTTP_CREATED, $this->client->getResponse()->getStatusCode());
