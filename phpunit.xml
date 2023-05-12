@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd" colors="true" bootstrap="vendor/autoload.php" cacheDirectory=".phpunit.cache">
+  <coverage>
+    <report>
+      <html outputDirectory="report/html"/>
+    </report>
+  </coverage>
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <env name="KERNEL_CLASS" value="App\Shared\Infrastructure\Kernel"/>
+    <env name="APP_ENV" value="test"/>
+    <env name="APP_DEBUG" value="1"/>
+    <env name="APP_SECRET" value="s$cretf0rt3st"/>
+    <env name="DATABASE_URL" value="mysql://root:root@db:3306/scheduler?serverVersion=8.0.32&amp;charset=utf8mb4"/>
+    <env name="SHELL_VERBOSITY" value="-1"/>
+    <!-- Deprecations disabled as not breaking the app -->
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
+    <!-- define your env variables for the test env here -->
+    <!-- ###+ symfony/messenger ### -->
+    <env name="MESSENGER_TRANSPORT_DSN" value="in-memory://" force="true"/>
+    <!-- ###- symfony/messenger ### -->
+  </php>
+  <testsuites>
+    <testsuite name="Api Test Suite">
+      <directory>tests/</directory>
+    </testsuite>
+  </testsuites>
+  <logging/>
+  <source>
+    <include>
+      <directory>./src/</directory>
+    </include>
+    <exclude>
+      <directory>./src/Infrastructure/Shared/Persistence/Doctrine/Migrations</directory>
+      <file>./src/Infrastructure/Kernel.php</file>
+    </exclude>
+  </source>
+</phpunit>

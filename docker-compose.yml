@@ -1,0 +1,82 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: ./
+    volumes:
+      - './bin/symfony:/var/www/html/bin/console:cached'
+      - './config:/var/www/html/config:cached'
+      - './public:/var/www/html/public:cached'
+      - './src:/var/www/html/src:cached'
+      - './tests:/var/www/html/tests:cached'
+      - './vendor:/var/www/html/vendor:cached'
+      - './composer.json:/var/www/html/composer.json:cached'
+      - './composer.lock:/var/www/html/composer.lock:cached'
+      - './symfony.lock:/var/www/html/symfony.lock:cached'
+      - './phpunit.xml:/var/www/html/phpunit.xml:cached'
+      - './.env:/var/www/html/.env:cached'
+    labels:
+      - 'traefik.http.routers.mindento-scheduler.rule=Host(`mindento-scheduler.localhost`)'
+      - 'traefik.http.routers.mindento-scheduler.entrypoints=https'
+      - 'traefik.http.routers.mindento-scheduler.tls=true'
+      - 'traefik.http.routers.mindento-scheduler.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.mindento-scheduler.loadbalancer.server.port=8080'
+      - 'traefik.http.middlewares.mindento-scheduler.redirectscheme.scheme=https'
+
+  traefik:
+    image: 'traefik:v2.5'
+    command:
+      - '--entrypoints.http.address=:80'
+      - '--entrypoints.https.address=:443'
+      - '--providers.docker=true'
+      - '--api=true'
+      - '--certificatesresolvers.letsencrypt.acme.httpchallenge=true'
+      - '--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=http'
+      - '--certificatesresolvers.letsencrypt.acme.email=contact@brandfil.com'
+      - '--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json'
+    labels:
+      - 'traefik.http.routers.to-https.rule=HostRegexp(`{host:.+}`)'
+      - 'traefik.http.routers.to-https.entrypoints=http'
+      - 'traefik.http.routers.to-https.middlewares=to-https'
+      - 'traefik.http.routers.traefik.entrypoints=https'
+      - 'traefik.http.routers.traefik.middlewares=auth'
+      - 'traefik.http.routers.traefik.service=api@internal'
+      - 'traefik.http.routers.traefik.tls=true'
+      - 'traefik.http.routers.traefik.tls.certresolver=letsencrypt'
+      - 'traefik.http.middlewares.to-https.redirectscheme.scheme=https'
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - '.docker/traefik/letsencrypt:/letsencrypt'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+
+  db:
+    image: mysql:8.0
+    ports:
+      - '3306:3306'
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    tmpfs:
+      - /var/lib/mysql/:rw,noexec,nosuid,size=600m
+      - /tmp/:rw,noexec,nosuid,size=50m
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=root
+
+  start_dependencies:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - db
+      - php
+    command: db:3306
+
+volumes:
+  postgres:
+  mysql_data:
