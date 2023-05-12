@@ -46,15 +46,18 @@ class Calculator implements CalculatorInterface
     public function getTotalAllowance(): int
     {
         $allowance = 0;
-        $dateInterval = new \DateInterval('P1D');
-        $datePeriod = new \DatePeriod($this->startDate, $dateInterval, $this->endDate->modify('+1 day'));
+        $datePeriod = new \DatePeriod(
+            $this->startDate->setTime(23, 59, 59),
+            new \DateInterval('P1D'),
+            $this->endDate->setTime(23, 59, 59)->modify('+1 day')
+        );
         $iterations = iterator_count($datePeriod);
 
         foreach ($datePeriod as $i => $date) {
-            if ($i === $iterations-1) {
+            if($i === 0) {
+                $date = $this->startDate;
+            } elseif ($i === $iterations-1) {
                 $date = $this->endDate;
-            } elseif ($i > 0) {
-                $date = $date->setTime(23, 59, 59);
             }
 
             $allowance += $this->getDailyAllowance($date);
