@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Delegation\Domain\Calculator;
@@ -52,7 +53,7 @@ class Calculator implements CalculatorInterface
         foreach ($datePeriod as $i => $date) {
             if ($i === $iterations-1) {
                 $date = $this->endDate;
-            } else if ($i > 0) {
+            } elseif ($i > 0) {
                 $date = $date->setTime(23, 59, 59);
             }
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace UI\Http\Rest\Controller;
@@ -16,8 +17,7 @@ abstract class AbstractController extends BaseController
     public function __construct(
         private readonly CommandBusInterface $commandBus,
         private readonly QueryBusInterface $queryBus,
-    )
-    {
+    ) {
     }
 
     protected function json(mixed $data, int $status = 200, array $headers = [], array $context = []): JsonResponse
