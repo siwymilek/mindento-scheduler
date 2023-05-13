@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Delegation\Domain;
 
+use App\Delegation\Domain\Calculator\Calculator;
 use App\Delegation\Domain\Event\DelegationWasCreated;
 use App\Delegation\Domain\Specification\DelegationOverlapsWithAnotherSpecificationInterface;
 use App\Delegation\Domain\ValueObject\Country;
@@ -31,10 +32,15 @@ class Delegation extends EventSourcedAggregateRoot
         UuidInterface $employeeUuid,
         Period $period,
         Country $country,
-        int $allowance,
         DelegationOverlapsWithAnotherSpecificationInterface $delegationOverlapsWithAnotherSpecification,
     ): self {
         $delegationOverlapsWithAnotherSpecification->isOverlapping($employeeUuid, $period);
+
+        $allowance = new Calculator(
+            $period->getStartDate(),
+            $period->getEndDate(),
+            $country,
+        );
 
         $delegation = new self();
         $delegation->apply(new DelegationWasCreated(
@@ -42,7 +48,7 @@ class Delegation extends EventSourcedAggregateRoot
             $employeeUuid,
             $period,
             $country,
-            $allowance,
+            $allowance->getTotalAllowance(),
             DateTime::now(),
         ));
 
