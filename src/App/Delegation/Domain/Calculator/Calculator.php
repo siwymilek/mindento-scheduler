@@ -6,7 +6,7 @@ namespace App\Delegation\Domain\Calculator;
 
 use App\Delegation\Domain\ValueObject\Country;
 
-class Calculator implements CalculatorInterface
+final class Calculator implements CalculatorInterface
 {
     private const PAYDAY_MARGIN = 8 * 60 * 60;
 
