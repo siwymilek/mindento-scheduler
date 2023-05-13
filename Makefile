@@ -3,7 +3,7 @@ COMPOSE_FILE_ARGS ?= -f docker-compose.yml
 DOCKER_COMPOSE = docker-compose $(COMPOSE_FILE_ARGS)
 
 .PHONY: start
-start: build start-deps db
+start: build start-deps composer-install db
 
 .PHONY: up
 up:
@@ -55,6 +55,9 @@ db-migrate:
 
 db-fixtures:
 	bin/composer --no-ansi -n db-fixtures
+
+cs-fix:
+	bin/cs-fixer fix .
 
 phpunit:
 	make start
